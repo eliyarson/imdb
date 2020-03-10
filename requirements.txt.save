@@ -1,0 +1,8 @@
+# requirements.txt
+
+Flask==1.1.1
+gunicorn==20.0.4 
+pandas == 1.
+yagmail == 0.11.224
+pyminizip == 0.2.4
+beautifulsoup4 == 4.8.2
