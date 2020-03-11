@@ -11,48 +11,54 @@ app = Flask(__name__)
 
 def scrape():
     headers = {"Accept-Language":"en-US, en, q=0.5s"}
-    url = "https://www.imdb.com/search/title/?groups=top_1000&ref_=adv_prv"
-    results = requests.get(url, headers=headers)
-    soup = BeautifulSoup(results.text,"html.parser")
-    movies = soup.find_all('div',class_='lister-item mode-advanced')
-    titles=[]
-    years=[]
-    time=[]
-    imdb_ratings=[]
-    metascore=[]
-    votes=[]
-    us_gross=[]
-    genres = []
-    for movie in movies:
-        title=movie.h3.a.text
-        titles.append(title)
+    start = 1
+    i=0
+    dfm = pd.DataFrame()
+    while i < 10:
+        url = "https://www.imdb.com/search/title/?groups=top_1000&start={0}&ref_=adv_nxt".format(start)
+        results = requests.get(url, headers=headers)
+        soup = BeautifulSoup(results.text,"html.parser")
+        movies = soup.find_all('div',class_='lister-item mode-advanced')
+        titles=[]
+        years=[]
+        time=[]
+        imdb_ratings=[]
+        metascore=[]
+        votes=[]
+        us_gross=[]
+        genres = []
+        for movie in movies:
+            title=movie.h3.a.text
+            titles.append(title)
 
-        year = movie.find('span',class_='lister-item-year text-muted unbold').text
-        years.append(year)
+            year = movie.find('span',class_='lister-item-year text-muted unbold').text
+            years.append(year)
 
-        runtime= movie.p.find('span',class_='runtime').text
-        time.append(runtime)
+            runtime= movie.find('span',class_='runtime').text if movie.find('span',class_='runtime') else '-'
+            time.append(runtime)
 
-        imdb_rating = movie.find('div',class_='inline-block ratings-imdb-rating').strong.text
-        imdb_ratings.append(imdb_rating)
+            imdb_rating = movie.find('div',class_='inline-block ratings-imdb-rating').strong.text
+            imdb_ratings.append(imdb_rating)
 
-        metascore_= movie.find('div',class_='inline-block ratings-metascore').span.text
-        metascore.append(metascore_)
+            metascore_= movie.find('span',class_='metascore').text if movie.find('span',class_='metascore') else '-'
+            metascore.append(metascore_)
 
-    df = pd.DataFrame({
-        'movie':titles,
-        'year':years,
-        'imdb_ratings':imdb_ratings,
-        'metacritic': metascore,
-        'runtime':time
-    })
+        df = pd.DataFrame({
+            'movie':titles,
+            'year':years,
+            'imdb_ratings':imdb_ratings,
+            'metacritic': metascore,
+            'runtime':time
+        })
 
-    df['year']=df['year'].apply(lambda x:re.findall(r"[0-9]+",x)[0] )
-    df['runtime']=df['runtime'].apply(lambda x:re.findall(r"[0-9]+",x)[0] )
+        df['year']=df['year'].apply(lambda x:re.findall(r"[0-9]+",x)[0] )
+        df['runtime']=df['runtime'].apply(lambda x:re.findall(r"[0-9]+",x)[0] )
+        dfm = dfm.append(df)
+        start += 50
+        i+=1
+        dfm.reset_index(inplace=True)
 
-
-
-    return df
+    return dfm
 
 @app.route('/')  
 def home():
