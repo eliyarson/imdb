@@ -56,6 +56,7 @@ def scrape():
 
         df['year']=df['year'].apply(lambda x:re.findall(r"[0-9]+",x)[0])
         df['runtime']=df['runtime'].apply(lambda x:re.findall(r"[0-9]+",x)[0] )
+        df['votes']=df['votes'].str.replace(',','').astype('int64')
         dfm = dfm.append(df)
         start += 50
     dfm.reset_index(drop=True,inplace=True)
