@@ -42,12 +42,16 @@ def scrape():
             metascore_= movie.find('span',class_='metascore').text if movie.find('span',class_='metascore') else '-'
             metascore.append(metascore_)
 
+            vote = movie.find_all('span',attrs={'name':'nv'})[0].text
+            votes.append(vote)
+
         df = pd.DataFrame({
             'movie':titles,
             'year':years,
             'imdb_ratings':imdb_ratings,
             'metacritic': metascore,
-            'runtime':time
+            'runtime':time,
+            'votes':votes
         })
 
         df['year']=df['year'].apply(lambda x:re.findall(r"[0-9]+",x)[0] )
