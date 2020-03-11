@@ -54,7 +54,7 @@ def scrape():
             'votes':votes
         })
 
-        df['year']=df['year'].apply(lambda x:re.findall(r"[0-9]+",x)[0] )
+        df['year']=df['year'].apply(lambda x:re.findall(r"[0-9]+",x)[0])
         df['runtime']=df['runtime'].apply(lambda x:re.findall(r"[0-9]+",x)[0] )
         dfm = dfm.append(df)
         start += 50
@@ -62,11 +62,14 @@ def scrape():
 
     return dfm
 
-@app.route('/')  
+@app.route('/raw')  
 def home():
-    df = scrape()
     return render_template('simple.html',  tables=[df.to_html(classes='data')], titles=df.columns.values)
 
+@app.route('/')
+def main() :
+    return "Welcome to Flask "
+
 if __name__ == '__main__':
-    app.run(debug=True)
-   
+    df = scrape()
+    app.run()
