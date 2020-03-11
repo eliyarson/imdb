@@ -12,9 +12,8 @@ app = Flask(__name__)
 def scrape():
     headers = {"Accept-Language":"en-US, en, q=0.5s"}
     start = 1
-    i=0
     dfm = pd.DataFrame()
-    while i < 10:
+    while start < 1000:
         url = "https://www.imdb.com/search/title/?groups=top_1000&start={0}&ref_=adv_nxt".format(start)
         results = requests.get(url, headers=headers)
         soup = BeautifulSoup(results.text,"html.parser")
@@ -55,8 +54,7 @@ def scrape():
         df['runtime']=df['runtime'].apply(lambda x:re.findall(r"[0-9]+",x)[0] )
         dfm = dfm.append(df)
         start += 50
-        i+=1
-        dfm.reset_index(inplace=True)
+    dfm.reset_index(drop=True,inplace=True)
 
     return dfm
 
