@@ -13,13 +13,10 @@ import dash_html_components as html
 
 app = Flask(__name__)
 
-
-
-
 dash_app = dash.Dash(
     __name__,
     server=app,
-    routes_pathname_prefix='/dash/'
+    routes_pathname_prefix='/dash'
 )
 
 dash_app.layout = html.Div("My Dash app")
@@ -85,8 +82,8 @@ def home():
 
 @app.route('/')
 def main() :
+    df = scrape()
     return "Welcome to Flask "
 
 if __name__ == '__main__':
-    df = scrape()
     dash_app.run_server()
