@@ -6,8 +6,24 @@ import pandas as pd
 from bs4 import BeautifulSoup
 import numpy as np
 import re
+#add dash components
+import dash
+import dash_html_components as html
+
 
 app = Flask(__name__)
+
+
+
+
+dash_app = dash.Dash(
+    __name__,
+    server=app,
+    routes_pathname_prefix='/dash/'
+)
+
+dash_app.layout = html.Div("My Dash app")
+
 
 def scrape():
     headers = {"Accept-Language":"en-US, en, q=0.5s"}
@@ -73,4 +89,4 @@ def main() :
 
 if __name__ == '__main__':
     df = scrape()
-    app.run()
+    dash_app.run_server()
