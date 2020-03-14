@@ -40,13 +40,17 @@ def scrape():
             vote = movie.find_all('span',attrs={'name':'nv'})[0].text
             votes.append(vote)
 
+            gross = movie.find_all('span',attrs={'name':'nv'})[1].text if len(movie.find_all('span',attrs={'name':'nv'}))>1 else '-'
+            us_gross.append(gross)
+
         df = pd.DataFrame({
             'movie':titles,
             'year':years,
             'imdb_ratings':imdb_ratings,
             'metacritic': metascore,
             'runtime':time,
-            'votes':votes
+            'votes':votes,
+            'us_gross':us_gross
         })
 
         df['year']=df['year'].apply(lambda x:re.findall(r"[0-9]+",x)[0])
