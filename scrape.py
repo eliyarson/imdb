@@ -57,9 +57,10 @@ def scrape():
             'us_gross':us_gross
         })
 
-        df['year']=df['year'].apply(lambda x:re.findall(r"[0-9]+",x)[0]).astype(int)
+        df.year=df.year.apply(lambda x:re.findall(r"[0-9]+",x)[0]).astype(int)
         df['runtime']=df['runtime'].apply(lambda x:re.findall(r"[0-9]+",x)[0] )
         df['votes']=df['votes'].str.replace(',','').astype('int64')
+        df.genres = df.genres.str.strip()
         dfm = dfm.append(df)
         start += 50
     dfm.reset_index(drop=True,inplace=True)
