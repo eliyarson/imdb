@@ -37,7 +37,9 @@ dash_app.layout = html.Div(
         value=2019
     ),
     dash_table.DataTable(id='table',
-    columns=[{"name":i,"id":i} for i in df.columns]
+    columns=[{"name":i,"id":i} for i in df.columns],
+    sort_action='native',
+    sort_mode='multi'
     )
     ]
 )

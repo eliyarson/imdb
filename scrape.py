@@ -43,6 +43,9 @@ def scrape():
             gross = movie.find_all('span',attrs={'name':'nv'})[1].text if len(movie.find_all('span',attrs={'name':'nv'}))>1 else '-'
             us_gross.append(gross)
 
+            genre = movie.find('span',class_='genre').text
+            genres.append(genre)
+
         df = pd.DataFrame({
             'movie':titles,
             'year':years,
@@ -50,6 +53,7 @@ def scrape():
             'metacritic': metascore,
             'runtime':time,
             'votes':votes,
+            'genres':genres,
             'us_gross':us_gross
         })
 
