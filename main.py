@@ -12,12 +12,18 @@ from dash.dependencies import Input,Output
 #import scrape function
 import scrape
 
+
+#scraped dataframe
 df = scrape.scrape()
-external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+genre_list = df.genres.str.split(",",expand=True)[0].append(df.genres.str.split(",",expand=True)[1]).append(df.genres.str.split(",",expand=True)[2]).dropna().str.strip().sort_values().unique()
+
+
+
+#main app
 app = Flask(__name__)
 
-
 #dash app
+external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 dash_app = dash.Dash(
     __name__,
     server=app,
@@ -36,6 +42,11 @@ dash_app.layout = html.Div(
         marks={i: 'Year {}'.format(i) if i == df.year.min() else str(i) for i in range(df.year.min(), df.year.max()+1,10)},
         value=2019
     ),
+    dcc.Dropdown(
+        id='genre-dropdown',
+        options=[{'label':i,'value':i} for i in genre_list],
+        value=''
+    ),
     dash_table.DataTable(id='table',
     columns=[{"name":i,"id":i} for i in df.columns],
     sort_action='native',
@@ -46,10 +57,12 @@ dash_app.layout = html.Div(
 
 @dash_app.callback(
     Output('table','data'),
-    [Input('year-slider','value')]
+    [Input('year-slider','value'),
+    Input ('genre-dropdown','value')]
 )
-def update_df(input_year):
+def update_df(input_year,input_genre):
     filtered_df = df[df.year==input_year].sort_values(by='imdb_ratings',ascending=False)
+    filtered_df = filtered_df[filtered_df.genres.str.contains(input_genre)]
     filtered_data = filtered_df.to_dict('records')
     return filtered_data
 
