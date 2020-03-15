@@ -1,0 +1,10 @@
+steps:
+#Build the container image
+-   name:'gcr.io/cloud-builders/docker'
+    args:['build','-t','gcr.io/imdb-2020/imdb','.']
+#Push container img to Container Registry
+-   name: 'gcr.io/cloud-builders/docker'
+    args: ['push','gcr.io/imdb-2020/imdb/']
+#Deploy container image to Cloud Run
+-   name: 'gcr.io/cloud-builders/gcloud'
+    args: ['beta','run','deploy','imdb-2020','--image','gcr.io/imdb-2020/imdb','--region','us-central1','--platform','managed','--alow-unauthenticated']
