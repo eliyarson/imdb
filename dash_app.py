@@ -6,11 +6,11 @@ from dash.dependencies import Input,Output
 import pandas as pd 
 #import scrape function
 import scrape
+import numpy as np
 
 #scraped dataframe
 df = scrape.scrape()
 genre_list = df.genres.str.split(",",expand=True)[0].append(df.genres.str.split(",",expand=True)[1]).append(df.genres.str.split(",",expand=True)[2]).dropna().str.strip().sort_values().unique()
-
 
 #dash app
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
@@ -33,7 +33,7 @@ app.layout = html.Div(
     ),
     dcc.Dropdown(
         id='genre-dropdown',
-        options=[{'label':i,'value':i} for i in genre_list],
+        options=[{'label':i,'value':''} if i=='All' else {'label':i,'value':i} for i in genre_list],
         value=''
     ),
     dash_table.DataTable(id='table',
@@ -51,6 +51,9 @@ app.layout = html.Div(
 )
 def update_df(input_year,input_genre):
     filtered_df = df[df.year==input_year].sort_values(by='imdb_ratings',ascending=False)
-    filtered_df = filtered_df[filtered_df.genres.str.contains(input_genre)]
+    if input_genre == None:
+        filtered_df = filtered_df[filtered_df.genres.str.contains('')]
+    else:
+        filtered_df = filtered_df[filtered_df.genres.str.contains(input_genre)]
     filtered_data = filtered_df.to_dict('records')
     return filtered_data
