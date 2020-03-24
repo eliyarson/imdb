@@ -7,3 +7,4 @@ beautifulsoup4 == 4.8.2
 requests == 2.23.0
 dash == 1.9.1
 werkzeug == 0.16.1
+pymongo == 3.10.1

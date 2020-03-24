@@ -34,7 +34,7 @@ def scrape():
             imdb_rating = movie.find('div',class_='inline-block ratings-imdb-rating').strong.text
             imdb_ratings.append(imdb_rating)
 
-            metascore_= movie.find('span',class_='metascore').text if movie.find('span',class_='metascore') else '-'
+            metascore_= movie.find('span',class_='metascore').text.strip() if movie.find('span',class_='metascore') else '-'
             metascore.append(metascore_)
 
             vote = movie.find_all('span',attrs={'name':'nv'})[0].text
@@ -65,4 +65,6 @@ def scrape():
         start += 50
     dfm.reset_index(drop=True,inplace=True)
 
-    return dfm
+    dfm.to_csv('data.csv',index=False,sep=",")
+
+scrape()

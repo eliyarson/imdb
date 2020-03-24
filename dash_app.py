@@ -5,11 +5,12 @@ import dash_table
 from dash.dependencies import Input, Output
 import pandas as pd
 #import scrape function
-import scrape
+
 import numpy as np
 
 #scraped dataframe
-df = scrape.scrape()
+df = pd.read_csv('data.csv')
+
 genre_list = df.genres.str.split(",", expand=True)[0].append(df.genres.str.split(",", expand=True)[
     1]).append(df.genres.str.split(",", expand=True)[2]).dropna().str.strip().sort_values().unique()
 
