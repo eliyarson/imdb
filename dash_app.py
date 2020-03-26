@@ -4,8 +4,7 @@ import dash_core_components as dcc
 import dash_table
 from dash.dependencies import Input, Output
 import pandas as pd
-#import scrape function
-
+import plotly.graph_objs as go
 import numpy as np
 
 #scraped dataframe
@@ -25,7 +24,7 @@ app = dash.Dash(
 app.layout = html.Div(
     [
         #Header
-        html.H1(children='Top 1000 Movies'),
+        html.H1(children='Top 1000 Movies - Test'),
         html.Div([
             html.Label('Slider'),
             dcc.Slider(
@@ -35,27 +34,34 @@ app.layout = html.Div(
                 marks={i: 'Year {}'.format(i) if i == df.year.min() else str(
                     i) for i in range(df.year.min(), df.year.max()+1, 10)},
                 value=2019
-            ), ]),
-            html.Div([
-                dcc.Dropdown(
-                    id='genre-dropdown',
-                    options=[{'label': i, 'value': ''} if i == 'All' else {
-                        'label': i, 'value': i} for i in genre_list],
-                    value=''
-                ),
-                dash_table.DataTable(id='table',
-                                     columns=[{"name": i, "id": i}
-                                              for i in df.columns],
-                                     sort_action='native',
-                                     sort_mode='multi'
-                                     )
+            )]),
+        html.Div([
+            dcc.Dropdown(
+                id='genre-dropdown',
+                options=[{'label': i, 'value': ''} if i == 'All' else {
+                    'label': i, 'value': i} for i in genre_list],
+                value=''
+            )]),
+        html.Div([
+            dcc.Graph(
+                id='movie-graph'
+            )
+        ]),
+        html.Div([
+            dash_table.DataTable(id='table',
+                                 columns=[{"name": i, "id": i}
+                                          for i in df.columns],
+                                 sort_action='native',
+                                 sort_mode='multi'
+                                 )
             ])
-        ], style={'columnCount': 1,
-                  'width': '95%'})
+    ], style={'columnCount': 1,
+              'width': '95%'})
 
 
 @app.callback(
-    Output('table', 'data'),
+    [Output('table', 'data'),
+    Output('movie-graph','figure')],
     [Input('year-slider', 'value'),
      Input('genre-dropdown', 'value')]
 )
@@ -66,5 +72,15 @@ def update_df(input_year, input_genre):
         filtered_df = filtered_df[filtered_df.genres.str.contains('')]
     else:
         filtered_df = filtered_df[filtered_df.genres.str.contains(input_genre)]
+
     filtered_data = filtered_df.to_dict('records')
-    return filtered_data
+    figure = {'data':[
+        {
+        'x': filtered_df['movie'],
+        'y': filtered_df['imdb_ratings'],
+        'name':'Scatter'
+        }
+        ]}
+    
+    return filtered_data,figure
+
