@@ -24,7 +24,7 @@ app = dash.Dash(
 app.layout = html.Div(
     [
         #Header
-        html.H1(children='Top 1000 Movies - Test'),
+        html.H1(children='Top 1000 Movies'),
         html.Div([
             html.Label('Slider'),
             dcc.Slider(
@@ -76,9 +76,10 @@ def update_df(input_year, input_genre):
     filtered_data = filtered_df.to_dict('records')
     figure = {'data':[
         {
-        'x': filtered_df['movie'],
+        'x': filtered_df['metacritic'],
         'y': filtered_df['imdb_ratings'],
-        'name':'Scatter'
+        'text': filtered_df['movie'],
+        'mode':'markers'
         }
         ]}
     
