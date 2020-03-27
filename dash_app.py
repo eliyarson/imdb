@@ -44,7 +44,7 @@ app.layout = html.Div(
             )]),
         html.Div([
             dcc.Graph(
-                id='movie-graph'
+                id='movie-ratings'
             )
         ]),
         html.Div([
@@ -52,16 +52,20 @@ app.layout = html.Div(
                                  columns=[{"name": i, "id": i}
                                           for i in df.columns],
                                  sort_action='native',
-                                 sort_mode='multi'
+                                 sort_mode='multi',
+                                 style_data={
+                                     'whiteSpace': 'normal',
+                                     'height': 'auto'
+                                 }
                                  )
-            ])
-    ], style={'columnCount': 1,
+        ])
+    ], style={'columnCount': 2,
               'width': '95%'})
 
 
 @app.callback(
     [Output('table', 'data'),
-    Output('movie-graph','figure')],
+     Output('movie-ratings', 'figure')],
     [Input('year-slider', 'value'),
      Input('genre-dropdown', 'value')]
 )
@@ -74,14 +78,19 @@ def update_df(input_year, input_genre):
         filtered_df = filtered_df[filtered_df.genres.str.contains(input_genre)]
 
     filtered_data = filtered_df.to_dict('records')
-    figure = {'data':[
-        {
-        'x': filtered_df['metacritic'],
-        'y': filtered_df['imdb_ratings'],
-        'text': filtered_df['movie'],
-        'mode':'markers'
+    ratings_figure = {
+        'data': [
+            {
+                'x': filtered_df['metacritic'],
+                'y': filtered_df['imdb_ratings'],
+                'text': filtered_df['movie'],
+                'mode':'markers',
+                'marker':{'size': 10}
+            }],
+        'layout': {
+            'yaxis':{'title':'IMDB Ratings'},
+            'xaxis':{'title':'Metacritic Score'},
+            'title':'Ratings Scatterplot'
         }
-        ]}
-    
-    return filtered_data,figure
-
+    }
+    return filtered_data, ratings_figure
