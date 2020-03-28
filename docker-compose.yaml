@@ -5,16 +5,25 @@ services:
         build:
             context: app
             dockerfile: Dockerfile
-        ports:
-            - "8080:8080"
         environment: 
-            - PORT=8080
+            - APP_ENV="prod"
+            - APP_DEBUG="False"
+            - APP_PORT=5000
+            - MONGODB_DATABASE=flaskdb
+            - MONGODB_USERNAME=flaskuser
+            - MONGODB_PASSWORD=123456
+            - MONGODB_HOSTNAME=mongodb
         container_name: flask
         image: imdb_flask:latest
         volumes:
             - appdata:/var/www
         restart: unless-stopped
-        
+        networks: 
+            - frontend
+            - backend
+        depends_on:
+            - mongodb
+
     mongodb:
         image: mongo:4.0.8
         container_name: mongodb
@@ -29,8 +38,38 @@ services:
         volumes:
               - mongodbdata:/data/db
 
+    webserver:
+        build:
+            context: nginx
+            dockerfile: Dockerfile
+        image: digitalocean.com/webserver:latest
+        container_name: webserver
+        restart: unless-stopped
+        environment: 
+            APP_ENV: "prod"
+            APP_NAME: "webserver"
+            APP_DEBUG: "false"
+            SERVICE_NAME: "webserver"
+        ports:
+            - "80:80"
+            - "443:443"
+        volumes:
+            - nginxdata:/var/log/nginx
+        depends_on:
+            - app
+        networks:
+            - frontend
+
+networks:
+    frontend:
+        driver: bridge
+    backend:
+        driver: bridge 
+
 volumes:
     appdata:
         driver: local
     mongodbdata:
+        driver: local
+    nginxdata:
         driver: local
