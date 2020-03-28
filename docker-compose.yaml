@@ -2,13 +2,17 @@ version: '3'
 services:
     app:
         build:
-            context: .
+            context: app
+            dockerfile: Dockerfile
         ports:
             - "8080:8080"
         environment: 
             - PORT=8080
-        container_name: imdb
-        image: imdb:latest
+        container_name: flask
+        image: imdb_flask:latest
         volumes:
-            - .:/app
-        restart: always
+            - appdata:/var/www
+        restart: unless-stopped
+volumes:
+    appdata:
+        driver: local
