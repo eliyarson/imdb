@@ -17,3 +17,10 @@ After deployment, the app can be accessed through your browser:
 The dashboard is on /dash/ path, so:
 
 ```https://localhost/dash``` 
+
+TODO:
+
+- Connect flask with MongoDB.
+- Work on the visualizations formatting.
+- Add more visualizations.
+- Add more movies.
