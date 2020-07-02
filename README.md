@@ -17,7 +17,9 @@ After deployment, the app can be accessed through your browser:
 ``` https://localhost```
 
 Default user access:
+
 user: `admin`
+
 password: `admin`
 
 To create a new user, see -> https://docs.nginx.com/nginx/admin-guide/security-controls/configuring-http-basic-authentication/
